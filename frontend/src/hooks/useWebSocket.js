@@ -1,0 +1,49 @@
+import { useEffect, useState, useRef } from 'react';
+
+export const useWebSocket = () => {
+  const [notifications, setNotifications] = useState([]);
+  const ws = useRef(null);
+  const [isConnected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('access_token');
+    if (!token) return;
+
+    const connect = () => {
+      const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8001';
+      ws.current = new WebSocket(`${WS_URL}/ws/notifications/?token=${token}`);
+
+      ws.current.onopen = () => {
+        console.log('WebSocket Connected');
+        setIsConnected(true);
+      };
+
+      ws.current.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log('Real-time notification:', data);
+        
+        if (data.type === 'ORDER_STATUS_UPDATED') {
+          alert(`Order ${data.data.order_id} status updated to: ${data.data.status}`);
+        }
+        
+        setNotifications((prev) => [data, ...prev]);
+      };
+
+      ws.current.onclose = () => {
+        console.log('WebSocket Disconnected');
+        setIsConnected(false);
+        setTimeout(connect, 5000);
+      };
+    };
+
+    connect();
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, []);
+
+  return { notifications, isConnected };
+};
