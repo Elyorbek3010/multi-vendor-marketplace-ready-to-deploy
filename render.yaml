@@ -14,6 +14,7 @@ services:
   - type: web
     name: marketplace-backend
     env: python
+    plan: free
     buildCommand: "./backend/build.sh"
     startCommand: "./backend/start.sh"
     envVars:
@@ -42,6 +43,7 @@ services:
   - type: web
     name: marketplace-realtime
     env: python
+    plan: free
     buildCommand: "pip install -r real_time_service/requirements.txt"
     startCommand: "uvicorn main:app --app-dir real_time_service --host 0.0.0.0 --port $PORT --workers 1"
     envVars:
