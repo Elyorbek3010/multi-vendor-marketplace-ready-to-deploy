@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -o errexit
 
+cd backend
+
 # Start Celery worker in the background
 celery -A config worker -l info --concurrency 1 &
 
