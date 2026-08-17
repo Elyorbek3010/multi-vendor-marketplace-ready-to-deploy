@@ -1,0 +1,7 @@
+# Enforce LF (Unix) line endings for shell scripts.
+# This prevents "\r: command not found" errors when building Docker images on Windows.
+*.sh text eol=lf
+*.conf text eol=lf
+
+# Default behavior for other files
+* text=auto

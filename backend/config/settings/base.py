@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'apps.orders',
     'corsheaders',
     'drf_spectacular',
+    'storages',
 ]
 
 MIDDLEWARE = [

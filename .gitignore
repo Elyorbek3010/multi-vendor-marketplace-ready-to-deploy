@@ -2,6 +2,8 @@
 .env
 .env.local
 .env.*.local
+.env.prod
+
 
 # Node/Frontend
 node_modules/
@@ -42,6 +44,7 @@ venv.bak/
 
 # Database & Media
 backend/media/
+staticfiles/
 db.sqlite3
 db.sqlite3-journal
 
