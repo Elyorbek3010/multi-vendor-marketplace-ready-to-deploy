@@ -18,6 +18,8 @@ services:
     buildCommand: "./backend/build.sh"
     startCommand: "./backend/start.sh"
     envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: config.settings.prod
       - key: DATABASE_URL
         fromDatabase:
           name: marketplace-db
