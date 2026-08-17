@@ -4,11 +4,12 @@ databases:
     user: marketplace_user
     plan: free
 
-keyValues:
-  - name: marketplace-redis
-    plan: free
 
 services:
+  - type: redis
+    name: marketplace-redis
+    plan: free
+
   - type: web
     name: marketplace-backend
     env: python
