@@ -9,6 +9,7 @@ services:
   - type: redis
     name: marketplace-redis
     plan: free
+    ipAllowList: []
 
   - type: web
     name: marketplace-backend
