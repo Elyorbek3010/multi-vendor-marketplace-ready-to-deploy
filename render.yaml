@@ -1,0 +1,80 @@
+databases:
+  - name: marketplace-db
+    databaseName: marketplace
+    user: marketplace_user
+    plan: free
+
+keyValues:
+  - name: marketplace-redis
+    plan: free
+
+services:
+  - type: web
+    name: marketplace-backend
+    env: python
+    buildCommand: "./backend/build.sh"
+    startCommand: "gunicorn config.wsgi:application --chdir backend --bind 0.0.0.0:$PORT --workers 2"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: marketplace-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  - type: web
+    name: marketplace-realtime
+    env: python
+    buildCommand: "pip install -r real_time_service/requirements.txt"
+    startCommand: "uvicorn main:app --app-dir real_time_service --host 0.0.0.0 --port $PORT --workers 1"
+    envVars:
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.0
+
+  - type: worker
+    name: marketplace-celery
+    env: python
+    buildCommand: "./backend/build.sh"
+    startCommand: "celery -A config worker --workdir backend -l info --concurrency 2"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: marketplace-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: CELERY_RESULT_BACKEND
+        fromService:
+          type: redis
+          name: marketplace-redis
+          property: connectionString
+      - key: PYTHON_VERSION
+        value: 3.11.0

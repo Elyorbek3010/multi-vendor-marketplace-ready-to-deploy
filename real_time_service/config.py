@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "dummy-secret-key"
     ALGORITHM: str = "HS256"
     PORT: int = 8001
-    WS_ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
+    CORS_ALLOWED_ORIGINS: str = ""
 
     class Config:
         env_file = ".env"

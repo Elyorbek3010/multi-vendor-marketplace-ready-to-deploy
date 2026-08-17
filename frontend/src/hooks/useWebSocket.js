@@ -10,7 +10,7 @@ export const useWebSocket = () => {
     if (!token) return;
 
     const connect = () => {
-      const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:8001';
+      const WS_URL = import.meta.env.VITE_WS_BASE_URL;
       ws.current = new WebSocket(`${WS_URL}/ws/notifications/?token=${token}`);
 
       ws.current.onopen = () => {
