@@ -56,8 +56,8 @@ class OrderStatusUpdateView(APIView):
             
         status = request.data.get('status')
         if status in dict(Order.Status.choices):
-            order.status = status
-            order.save()
+            from . import services
+            services.update_order_status(order, status)
             return Response({'status': order.status})
         return Response({'error': 'Invalid status'}, status=400)
 
