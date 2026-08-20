@@ -35,8 +35,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         if user.is_authenticated and getattr(user, 'role', None) == 'VENDOR' and hasattr(user, 'vendor_profile'):
             qs = qs.filter(vendor=user.vendor_profile)
             
+        from django.db.models.functions import Coalesce
+        from django.db.models import FloatField
+        
         qs = qs.annotate(
-            average_rating=Avg('reviews__rating'),
+            average_rating=Coalesce(Avg('reviews__rating'), 0.0, output_field=FloatField()),
             review_count=Count('reviews', distinct=True)
         )
             
