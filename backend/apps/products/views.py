@@ -67,6 +67,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         stock = self.request.data.get('stock')
         if stock is not None:
             services.update_inventory_stock(product, int(stock))
+            
+        serializer.instance = product
 
     def perform_update(self, serializer):
         product = serializer.save()
