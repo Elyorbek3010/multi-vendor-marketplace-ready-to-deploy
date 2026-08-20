@@ -16,7 +16,7 @@ def create_product(vendor: VendorProfile, category: Category, title: str, descri
     return product
 
 def update_inventory_stock(product: Product, quantity: int) -> Inventory:
-    inventory = product.inventory
+    inventory, created = Inventory.objects.get_or_create(product=product)
     inventory.stock = quantity
     inventory.save()
     return inventory

@@ -66,7 +66,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         
         stock = self.request.data.get('stock')
         if stock is not None:
-            services.update_inventory_stock(product, int(stock))
+            try:
+                stock_val = int(stock)
+                services.update_inventory_stock(product, stock_val)
+            except (ValueError, TypeError):
+                pass
             
         product.average_rating = 0.0
         product.review_count = 0
@@ -84,7 +88,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             
         stock = self.request.data.get('stock')
         if stock is not None:
-            services.update_inventory_stock(product, int(stock))
+            try:
+                stock_val = int(stock)
+                services.update_inventory_stock(product, stock_val)
+            except (ValueError, TypeError):
+                pass
 
     def perform_destroy(self, instance):
         instance.is_active = False
