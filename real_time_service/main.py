@@ -52,15 +52,19 @@ def health_check():
     return {"status": "ok", "service": "realtime"}
 
 @app.websocket("/ws/notifications/")
+@app.websocket("/ws/ws/notifications/")
 async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
+    await websocket.accept()
     try:
         payload = verify_jwt_token(token)
         user_id = str(payload.get("user_id"))
-    except Exception:
+    except Exception as e:
+        await websocket.send_text(json.dumps({"error": f"Token verification failed: {str(e)}"}))
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
         
     if not user_id:
+        await websocket.send_text(json.dumps({"error": "No user_id in token"}))
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
         
