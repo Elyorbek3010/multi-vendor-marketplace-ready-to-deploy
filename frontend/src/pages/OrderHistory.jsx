@@ -6,6 +6,8 @@ export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const { notifications } = useWebSocket();
 
+  const [toastMessage, setToastMessage] = useState(null);
+
   useEffect(() => {
     api.get('/orders/')
       .then(res => setOrders(Array.isArray(res.data) ? res.data : (res.data?.results || [])))
@@ -17,6 +19,12 @@ export default function OrderHistory() {
       const last = notifications[0];
       if (last.type === 'ORDER_STATUS_UPDATED' || last.type === 'ORDER_CREATED') {
         setOrders(prev => prev.map(o => o.id.toString() === last.data.order_id ? { ...o, status: last.data.status } : o));
+        
+        // Trigger the interactive toast!
+        setToastMessage(`Order #${last.data.order_id.substring(0,8)} is now ${last.data.status}`);
+        
+        // Auto-hide the toast after 5 seconds
+        setTimeout(() => setToastMessage(null), 5000);
       }
     }
   }, [notifications]);
@@ -87,6 +95,26 @@ export default function OrderHistory() {
           </div>
         ))}
       </div>
+
+      {/* Floating Interactive Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-8 right-8 z-50 transform transition-all duration-500 ease-in-out translate-y-0 opacity-100">
+          <div className="bg-indigo-600 text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-full">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+            </div>
+            <div>
+              <p className="font-bold text-sm">Order Status Update</p>
+              <p className="text-sm text-indigo-100">{toastMessage}</p>
+            </div>
+            <button onClick={() => setToastMessage(null)} className="ml-4 text-white/70 hover:text-white">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

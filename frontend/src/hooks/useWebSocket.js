@@ -23,9 +23,7 @@ export const useWebSocket = () => {
         const data = JSON.parse(event.data);
         console.log('Real-time notification:', data);
         
-        if (data.type === 'ORDER_STATUS_UPDATED') {
-          alert(`Order ${data.data.order_id} status updated to: ${data.data.status}`);
-        }
+        // We no longer trigger a browser alert. We just update the state.
         
         setNotifications((prev) => [data, ...prev]);
       };
