@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 set -o errexit
 
-cd backend
-
 pip install --upgrade pip
 pip install -r requirements.txt
 
 python manage.py collectstatic --no-input
 python manage.py migrate
+
+# Automatically create a superuser if the environment variables are provided
+python manage.py createsuperuser --noinput || true
