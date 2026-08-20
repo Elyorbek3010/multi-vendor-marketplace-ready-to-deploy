@@ -68,6 +68,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         if stock is not None:
             services.update_inventory_stock(product, int(stock))
             
+        product.average_rating = 0.0
+        product.review_count = 0
         serializer.instance = product
 
     def perform_update(self, serializer):
