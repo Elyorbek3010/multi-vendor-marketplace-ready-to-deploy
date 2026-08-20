@@ -45,6 +45,20 @@ class ProductViewSet(viewsets.ModelViewSet):
             
         return qs
 
+    def create(self, request, *args, **kwargs):
+        try:
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({'error': str(e), 'trace': traceback.format_exc()}, status=400)
+
+    def update(self, request, *args, **kwargs):
+        try:
+            return super().update(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            return Response({'error': str(e), 'trace': traceback.format_exc()}, status=400)
+
     def perform_create(self, serializer):
         try:
             vendor_profile = VendorProfile.objects.get(user=self.request.user)
