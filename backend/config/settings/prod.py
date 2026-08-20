@@ -42,6 +42,10 @@ if AWS_ACCESS_KEY_ID:
     STORAGES["default"] = {
         "BACKEND": "storages.backends.s3.S3Storage",
     }
+else:
+    STORAGES["default"] = {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    }
 
 # Redis & Celery
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
