@@ -49,6 +49,7 @@ class PasswordResetRequestView(APIView):
             return Response({"detail": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class PasswordResetConfirmView(APIView):
     permission_classes = [permissions.AllowAny]
 

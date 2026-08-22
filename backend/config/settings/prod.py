@@ -42,10 +42,6 @@ if AWS_ACCESS_KEY_ID:
     STORAGES["default"] = {
         "BACKEND": "storages.backends.s3.S3Storage",
     }
-elif os.environ.get("CLOUDINARY_URL"):
-    STORAGES["default"] = {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    }
 else:
     STORAGES["default"] = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
