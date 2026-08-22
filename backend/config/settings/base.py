@@ -29,6 +29,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_spectacular',
     'storages',
+    'cloudinary_storage',
+    'cloudinary',
 ]
 
 MIDDLEWARE = [
