@@ -50,7 +50,7 @@ export default function Login() {
   return (
     <div className="min-h-[80vh] flex items-center justify-center">
       <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border border-gray-100 dark:border-gray-700 w-full max-w-md transition-colors duration-200">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Sign in to your account (TEST)</h2>
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-900 dark:text-white">Sign in to your account</h2>
         {successMessage && <div className="bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 p-3 rounded mb-4 text-sm">{successMessage}</div>}
         {error && <div className="bg-red-50 dark:bg-red-900/30 text-red-500 dark:text-red-400 p-3 rounded mb-4 text-sm">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
