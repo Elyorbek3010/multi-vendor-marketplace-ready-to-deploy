@@ -34,7 +34,7 @@ export default function ResetPassword() {
 
     try {
       const response = await api.post('/auth/password-reset-confirm/', {
-        uid: uid,
+        uidb64: uid,
         token: token,
         new_password: password
       });

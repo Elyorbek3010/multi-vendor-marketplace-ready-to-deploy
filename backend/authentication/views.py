@@ -15,7 +15,7 @@ from .serializers import (
     EmailTokenObtainPairSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
-
+from django.conf import settings
 class EmailTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailTokenObtainPairSerializer
 
@@ -43,7 +43,8 @@ class PasswordResetRequestView(APIView):
             if user:
                 uidb64 = urlsafe_base64_encode(force_bytes(user.pk))
                 token = default_token_generator.make_token(user)
-                reset_url = f"http://localhost:3000/reset-password?uid={uidb64}&token={token}"
+                frontend_url = settings.FRONTEND_URL.rstrip('/')
+                reset_url = f"{frontend_url}/reset-password?uid={uidb64}&token={token}"
                 send_password_reset_email_task.delay(email, reset_url)
             
             return Response({"detail": "If the email exists, a reset link has been sent."}, status=status.HTTP_200_OK)
