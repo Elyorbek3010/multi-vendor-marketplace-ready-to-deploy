@@ -18,7 +18,7 @@ def send_password_reset_email_task(email, reset_url):
         raise ValueError("RESEND_API_KEY is not set.")
 
     # Using Resend's default testing email. Note: You must verify your domain on Resend to change this.
-    sender = "onboarding@resend.dev"
+    sender = "marketplacemanager@gmail.com"
     subject = "Password Reset Request - Marketplace"
     html_content = f"""
     <p>Hello,</p>

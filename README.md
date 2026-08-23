@@ -1,12 +1,28 @@
 # Multi-Vendor Marketplace Platform
 
-Welcome to the Multi-Vendor Marketplace Platform!
+A complete, full-stack multi-vendor marketplace platform ready for deployment.
 
-This project contains the backend (Django + FastAPI) and frontend (React) code for a complete marketplace solution.
+## Features
+
+- **Frontend**: React-based responsive UI for both customers and vendors.
+- **Backend**: Django REST Framework API for data management (users, products, orders).
+- **Real-Time Services**: FastAPI backend combined with Redis for real-time WebSocket notifications (e.g., order status updates).
+- **Authentication**: Secure JWT-based authentication shared between Django and FastAPI services.
+- **Database**: PostgreSQL for persistent data storage.
 
 ## Project Structure
 
-- `/backend`: Django backend API, managing users, products, orders, and database operations.
-- `/frontend`: React frontend for customers and vendors.
+- `/backend`: Contains the Django application (handling business logic, API endpoints, and database interactions).
+- `/frontend`: Contains the React application (customer storefront and vendor dashboard).
+- `/realtime_service`: Contains the FastAPI application (handling WebSockets and real-time features).
 
-More detailed documentation will be added soon.
+## Getting Started
+
+1. Clone the repository.
+2. Ensure you have Node.js, Python, PostgreSQL, and Redis installed.
+3. Configure the environment variables (see `.env.example`).
+4. Run the backend Django server, the FastAPI real-time service, and the React frontend development server.
+
+## Deployment
+
+This platform is configured for deployment with Vercel (Frontend) and Render (Backend).
