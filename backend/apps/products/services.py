@@ -2,6 +2,7 @@ from .models import Product, Category, Inventory, ProductImage
 from apps.vendors.models import VendorProfile
 
 def create_product(vendor: VendorProfile, category: Category, title: str, description: str, price: float, options: dict = None) -> Product:
+    """Creates a new product for a vendor and automatically initializes its inventory stock to zero."""
     product = Product.objects.create(
         vendor=vendor,
         category=category,
@@ -16,12 +17,14 @@ def create_product(vendor: VendorProfile, category: Category, title: str, descri
     return product
 
 def update_inventory_stock(product: Product, quantity: int) -> Inventory:
+    """Updates or creates the inventory record for a product with the specified stock quantity."""
     inventory, created = Inventory.objects.get_or_create(product=product)
     inventory.stock = quantity
     inventory.save()
     return inventory
 
 def add_product_image(product: Product, image_url: str, alt_text: str = "") -> ProductImage:
+    """Adds a new image record associated with the given product."""
     return ProductImage.objects.create(
         product=product,
         image_url=image_url,

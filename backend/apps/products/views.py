@@ -27,6 +27,7 @@ class ProductViewSet(viewsets.ModelViewSet):
     search_fields = ['title', 'description']
     ordering_fields = ['price', 'created_at', 'average_rating']
 
+    # Retrieves active products and isolates them per vendor if applicable, then adds review stats
     def get_queryset(self):
         qs = selectors.get_active_products()
         user = self.request.user
@@ -45,6 +46,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             
         return qs
 
+    # Handles product creation and catches exceptions to return a clean error trace
     def create(self, request, *args, **kwargs):
         try:
             return super().create(request, *args, **kwargs)
@@ -52,6 +54,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             import traceback
             return Response({'error': str(e), 'trace': traceback.format_exc()}, status=400)
 
+    # Handles product updating and catches exceptions to return a clean error trace
     def update(self, request, *args, **kwargs):
         try:
             return super().update(request, *args, **kwargs)
@@ -59,6 +62,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             import traceback
             return Response({'error': str(e), 'trace': traceback.format_exc()}, status=400)
 
+    # Coordinates product creation via services and handles uploaded image/stock
     def perform_create(self, serializer):
         try:
             vendor_profile = VendorProfile.objects.get(user=self.request.user)
@@ -93,6 +97,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         product.review_count = 0
         serializer.instance = product
 
+    # Updates existing product data, replaces images, and manages stock changes
     def perform_update(self, serializer):
         product = serializer.save()
         
@@ -111,6 +116,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             except (ValueError, TypeError):
                 pass
 
+    # Soft-deletes a product by marking it as inactive
     def perform_destroy(self, instance):
         instance.is_active = False
         instance.save()
@@ -118,14 +124,17 @@ class ProductViewSet(viewsets.ModelViewSet):
 class ProductReviewView(generics.ListCreateAPIView):
     serializer_class = ReviewSerializer
     
+    # Requires authentication for creating a review, allows anyone to list reviews
     def get_permissions(self):
         if self.request.method == 'POST':
             return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
+    # Retrieves all reviews for a specific product ordered by date
     def get_queryset(self):
         return Review.objects.filter(product_id=self.kwargs['product_id']).order_by('-created_at')
 
+    # Validates if the user has purchased the product before saving their review
     def perform_create(self, serializer):
         product_id = self.kwargs['product_id']
         product = get_object_or_404(Product, id=product_id)
@@ -149,6 +158,7 @@ class ProductReviewView(generics.ListCreateAPIView):
 class CanReviewProductView(APIView):
     permission_classes = [permissions.IsAuthenticated]
     
+    # Checks if the authenticated user is eligible to review the given product
     def get(self, request, product_id):
         product = get_object_or_404(Product, id=product_id)
         has_purchased = Order.objects.filter(

@@ -38,6 +38,7 @@ def create_order(buyer, items_data: list) -> Order:
     return order
 
 def update_order_status(order: Order, new_status: str) -> Order:
+    """Updates the status of an order and publishes a real-time notification to the buyer."""
     order.status = new_status
     order.save()
     publish_realtime_notification(

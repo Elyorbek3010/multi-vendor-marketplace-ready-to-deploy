@@ -127,7 +127,8 @@ export default function VendorDashboard() {
       setFormData({ title: '', description: '', price: '', stock: 0, category: '', optionsStr: '' });
       setSelectedFile(null);
     } catch (err) {
-      console.error(err);
+      console.error("Backend Error:", err.response?.data || err.message);
+      alert("Error adding product: " + JSON.stringify(err.response?.data || err.message));
     }
   };
 
