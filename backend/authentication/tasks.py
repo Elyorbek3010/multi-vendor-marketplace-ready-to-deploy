@@ -39,6 +39,7 @@ def send_password_reset_email_task(email, reset_url):
     req = urllib.request.Request("https://api.resend.com/emails", data=data)
     req.add_header("Authorization", f"Bearer {resend_api_key}")
     req.add_header("Content-Type", "application/json")
+    req.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
 
     try:
         with urllib.request.urlopen(req) as response:
