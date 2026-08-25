@@ -40,21 +40,6 @@ services:
     networks:
       - marketplace_network
 
-  celery_worker:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    container_name: marketplace_prod_celery
-    restart: always
-    command: celery -A config worker -l info --concurrency=2
-    env_file:
-      - .env.prod
-    depends_on:
-      - db
-      - redis
-      - backend
-    networks:
-      - marketplace_network
 
   realtime:
     build:

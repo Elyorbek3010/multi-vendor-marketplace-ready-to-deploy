@@ -36,18 +36,6 @@ services:
     env_file:
       - .env
 
-  celery_worker:
-    build: ./backend
-    container_name: marketplace_celery
-    command: celery -A core worker -l info
-    volumes:
-      - ./backend:/app
-    depends_on:
-      - db
-      - redis
-      - backend
-    env_file:
-      - .env
 
   realtime:
     build: ./real_time_service

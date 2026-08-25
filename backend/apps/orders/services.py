@@ -1,5 +1,4 @@
 from .models import Order, OrderItem
-from .tasks import generate_order_receipt_task
 from common.notifications import publish_realtime_notification
 
 def create_order(buyer, items_data: list) -> Order:
@@ -25,9 +24,7 @@ def create_order(buyer, items_data: list) -> Order:
     order.total_amount = total
     order.save()
     
-    # Trigger Celery Background Task!
-    generate_order_receipt_task.delay(str(order.id))
-    
+
     # Trigger Realtime Notification!
     publish_realtime_notification(
         str(buyer.id), 

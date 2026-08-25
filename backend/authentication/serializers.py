@@ -84,29 +84,7 @@ class EmailTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         return data
 
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_decode
-from django.utils.encoding import force_str
 
-class PasswordResetRequestSerializer(serializers.Serializer):
-    email = serializers.EmailField()
-
-class PasswordResetConfirmSerializer(serializers.Serializer):
-    uidb64 = serializers.CharField()
-    token = serializers.CharField()
-    new_password = serializers.CharField(write_only=True)
-
-    def validate(self, data):
-        try:
-            uid = force_str(urlsafe_base64_decode(data.get('uidb64')))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            raise serializers.ValidationError("Invalid token or user.")
-            
-        if not default_token_generator.check_token(user, data.get('token')):
-            raise serializers.ValidationError("Invalid or expired token.")
-            
-        return data
 
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True)
