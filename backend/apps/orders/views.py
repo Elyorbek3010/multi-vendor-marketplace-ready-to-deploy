@@ -54,12 +54,7 @@ class OrderStatusUpdateView(APIView):
         if getattr(user, 'role', None) == 'VENDOR' and hasattr(user, 'vendor_profile'):
             order = get_object_or_404(Order.objects.distinct(), pk=pk, items__product__vendor=user.vendor_profile)
         else:
-            order = get_object_or_404(Order, pk=pk, buyer=user)
-            # Buyers can only cancel their own orders, and only if they are still pending
-            if status != 'CANCELLED':
-                return Response({'error': 'Buyers can only cancel orders.'}, status=403)
-            if order.status != 'PENDING':
-                return Response({'error': 'Can only cancel pending orders.'}, status=400)
+            return Response({'error': 'You do not have permission to update order status.'}, status=403)
             
         if status in dict(Order.Status.choices):
             from . import services
