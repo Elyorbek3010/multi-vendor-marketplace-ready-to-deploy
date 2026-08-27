@@ -29,16 +29,6 @@ services:
           type: redis
           name: marketplace-redis
           property: connectionString
-      - key: CELERY_BROKER_URL
-        fromService:
-          type: redis
-          name: marketplace-redis
-          property: connectionString
-      - key: CELERY_RESULT_BACKEND
-        fromService:
-          type: redis
-          name: marketplace-redis
-          property: connectionString
       - key: PYTHON_VERSION
         value: 3.11.0
 
