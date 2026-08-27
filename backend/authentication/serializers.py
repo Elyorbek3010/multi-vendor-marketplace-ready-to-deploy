@@ -29,6 +29,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         fields = ['id', 'email', 'password', 'role']
         read_only_fields = ['id']
 
+    def validate_role(self, value):
+        if value not in ['BUYER', 'VENDOR']:
+            raise serializers.ValidationError("Invalid role. Must be BUYER or VENDOR.")
+        return value
+
     def validate_email(self, value):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError("A user with that email already exists.")
