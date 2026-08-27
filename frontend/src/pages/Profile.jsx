@@ -11,7 +11,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await api.get('auth/me/');
+        const response = await api.get('/auth/me/');
         setUserData(response.data);
       } catch (err) {
         console.error("Failed to load profile", err);
@@ -29,7 +29,7 @@ const Profile = () => {
     setError('');
 
     try {
-      const response = await api.post('auth/password-change/', passwords);
+      const response = await api.post('/auth/password-change/', passwords);
       setMessage(response.data.detail || "Password changed successfully.");
       setPasswords({ old_password: '', new_password: '' });
     } catch (err) {
