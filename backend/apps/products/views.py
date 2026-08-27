@@ -46,21 +46,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             
         return qs
 
-    # Handles product creation and catches exceptions to return a clean error trace
-    def create(self, request, *args, **kwargs):
-        try:
-            return super().create(request, *args, **kwargs)
-        except Exception as e:
-            import traceback
-            return Response({'error': str(e), 'trace': traceback.format_exc()}, status=400)
 
-    # Handles product updating and catches exceptions to return a clean error trace
-    def update(self, request, *args, **kwargs):
-        try:
-            return super().update(request, *args, **kwargs)
-        except Exception as e:
-            import traceback
-            return Response({'error': str(e), 'trace': traceback.format_exc()}, status=400)
 
     # Coordinates product creation via services and handles uploaded image/stock
     def perform_create(self, serializer):
