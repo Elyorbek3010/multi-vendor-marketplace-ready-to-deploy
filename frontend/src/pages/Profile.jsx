@@ -1,27 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 const Profile = () => {
-  const [userData, setUserData] = useState(null);
+  const { user: userData } = useAuth();
   const [passwords, setPasswords] = useState({ old_password: '', new_password: '' });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await api.get('/auth/me/');
-        setUserData(response.data);
-      } catch (err) {
-        console.error("Failed to load profile", err);
-        setError("Failed to load profile information.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProfile();
-  }, []);
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
@@ -47,16 +32,12 @@ const Profile = () => {
     }
   };
 
-  if (loading) {
+  if (!userData) {
     return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
-  }
-
-  if (!userData) {
-    return <div className="text-center text-red-500 mt-10">{error}</div>;
   }
 
   return (
