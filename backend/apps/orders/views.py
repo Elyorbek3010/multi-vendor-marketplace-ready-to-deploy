@@ -49,12 +49,18 @@ class OrderStatusUpdateView(APIView):
 
     def patch(self, request, pk):
         user = request.user
+        status = request.data.get('status')
+        
         if getattr(user, 'role', None) == 'VENDOR' and hasattr(user, 'vendor_profile'):
             order = get_object_or_404(Order.objects.distinct(), pk=pk, items__product__vendor=user.vendor_profile)
         else:
             order = get_object_or_404(Order, pk=pk, buyer=user)
+            # Buyers can only cancel their own orders, and only if they are still pending
+            if status != 'CANCELLED':
+                return Response({'error': 'Buyers can only cancel orders.'}, status=403)
+            if order.status != 'PENDING':
+                return Response({'error': 'Can only cancel pending orders.'}, status=400)
             
-        status = request.data.get('status')
         if status in dict(Order.Status.choices):
             from . import services
             services.update_order_status(order, status)
