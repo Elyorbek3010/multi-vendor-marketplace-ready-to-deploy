@@ -10,6 +10,7 @@ import Checkout from './pages/Checkout';
 import OrderHistory from './pages/OrderHistory';
 import VendorDashboard from './pages/VendorDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
             <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
             <Route path="/orders" element={<ProtectedRoute><OrderHistory /></ProtectedRoute>} />
             <Route path="/dashboard/vendor" element={<ProtectedRoute vendorOnly><VendorDashboard /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           </Routes>
         </main>
       </div>
