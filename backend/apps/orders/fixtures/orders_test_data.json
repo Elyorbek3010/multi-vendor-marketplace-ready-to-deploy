@@ -1,0 +1,91 @@
+[
+  {
+    "model": "authentication.customuser",
+    "pk": "11111111-1111-1111-1111-111111111111",
+    "fields": {
+      "email": "buyer@example.com",
+      "username": "buyer",
+      "role": "BUYER",
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "authentication.customuser",
+    "pk": "22222222-2222-2222-2222-222222222222",
+    "fields": {
+      "email": "vendor@example.com",
+      "username": "vendor",
+      "role": "VENDOR",
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "vendors.vendorprofile",
+    "pk": "33333333-3333-3333-3333-333333333333",
+    "fields": {
+      "user": "22222222-2222-2222-2222-222222222222",
+      "store_name": "JSON Test Store",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "products.category",
+    "pk": "44444444-4444-4444-4444-444444444444",
+    "fields": {
+      "name": "Test Category",
+      "slug": "test-category",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "products.product",
+    "pk": "55555555-5555-5555-5555-555555555555",
+    "fields": {
+      "vendor": "33333333-3333-3333-3333-333333333333",
+      "category": "44444444-4444-4444-4444-444444444444",
+      "title": "Test Product",
+      "description": "A product from the JSON fixture",
+      "price": "100.00",
+      "is_active": true,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "products.inventory",
+    "pk": "66666666-6666-6666-6666-666666666666",
+    "fields": {
+      "product": "55555555-5555-5555-5555-555555555555",
+      "stock": 10,
+      "low_stock_threshold": 2,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "orders.cart",
+    "pk": "77777777-7777-7777-7777-777777777777",
+    "fields": {
+      "user": "11111111-1111-1111-1111-111111111111",
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "orders.cartitem",
+    "pk": "88888888-8888-8888-8888-888888888888",
+    "fields": {
+      "cart": "77777777-7777-7777-7777-777777777777",
+      "product": "55555555-5555-5555-5555-555555555555",
+      "quantity": 3,
+      "created_at": "2026-01-01T00:00:00Z",
+      "updated_at": "2026-01-01T00:00:00Z"
+    }
+  }
+]

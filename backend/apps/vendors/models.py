@@ -15,7 +15,7 @@ class VendorProfile(UUIDModel, TimeStampedModel):
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_vendor_profile(sender, instance, created, **kwargs):
-    if created and getattr(instance, 'role', '').upper() == 'VENDOR':
+    if created and getattr(instance, 'role', '').upper() == 'VENDOR' and not kwargs.get('raw', False):
         VendorProfile.objects.create(
             user=instance,
             store_name=f"{instance.username}'s Store"
