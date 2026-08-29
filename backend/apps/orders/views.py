@@ -62,6 +62,27 @@ class OrderStatusUpdateView(APIView):
             return Response({'status': order.status})
         return Response({'error': 'Invalid status'}, status=400)
 
+class CancelOrderView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        user = request.user
+        
+        # Fetch order based on user role (Vendor sees orders for their products, Buyer sees their own orders)
+        if getattr(user, 'role', None) == 'VENDOR' and hasattr(user, 'vendor_profile'):
+            order = get_object_or_404(Order.objects.distinct(), pk=pk, items__product__vendor=user.vendor_profile)
+        else:
+            order = get_object_or_404(Order, pk=pk, buyer=user)
+            
+        from . import services
+        from rest_framework.exceptions import ValidationError
+        
+        try:
+            services.cancel_order(order, user)
+            return Response({'message': 'Order cancelled successfully.', 'status': order.status})
+        except ValidationError as e:
+            return Response({'error': e.detail[0] if isinstance(e.detail, list) else e.detail}, status=400)
+
 class CartView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
