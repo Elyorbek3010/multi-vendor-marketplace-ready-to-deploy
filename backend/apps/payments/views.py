@@ -42,7 +42,7 @@ class CreateStripeCheckoutSessionView(APIView):
                 cancel_url=f"{settings.FRONTEND_URL}/orders?canceled=true",
                 client_reference_id=str(order.id),
                 metadata={
-                    'order_id': order.id
+                    'order_id': str(order.id)
                 }
             )
             return Response({'payment_link': checkout_session.url})

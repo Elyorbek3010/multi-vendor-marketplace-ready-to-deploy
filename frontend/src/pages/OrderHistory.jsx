@@ -38,7 +38,8 @@ export default function OrderHistory() {
       }
     } catch (error) {
       console.error('Payment link generation failed:', error);
-      alert('Failed to generate payment link. Please try again.');
+      const errMsg = error.response?.data?.error || 'Failed to generate payment link. Please try again.';
+      alert(`Error: ${errMsg}`);
     }
   };
 
