@@ -1,5 +1,6 @@
 from .models import Order, OrderItem
 from common.notifications import publish_realtime_notification
+from common.models import AuditLog
 from rest_framework.exceptions import ValidationError
 from django.db import transaction
 
@@ -34,6 +35,12 @@ def create_order(buyer, items_data: list) -> Order:
         {"order_id": str(order.id), "status": order.status}
     )
     
+    AuditLog.objects.create(
+        user=buyer,
+        action='ORDER_CREATED',
+        details={'order_id': str(order.id), 'total_amount': str(order.total_amount)}
+    )
+    
     return order
 
 def update_order_status(order: Order, new_status: str) -> Order:
@@ -45,6 +52,13 @@ def update_order_status(order: Order, new_status: str) -> Order:
         "ORDER_STATUS_UPDATED", 
         {"order_id": str(order.id), "status": order.status}
     )
+    
+    AuditLog.objects.create(
+        user=None, # System/Vendor action
+        action='ORDER_STATUS_UPDATED',
+        details={'order_id': str(order.id), 'new_status': new_status}
+    )
+    
     return order
 
 @transaction.atomic
@@ -82,6 +96,12 @@ def cancel_order(order: Order, user) -> Order:
         str(order.buyer.id), 
         "ORDER_CANCELLED", 
         {"order_id": str(order.id), "status": order.status}
+    )
+    
+    AuditLog.objects.create(
+        user=user,
+        action='ORDER_REFUNDED' if requires_refund else 'ORDER_CANCELLED',
+        details={'order_id': str(order.id), 'status': order.status, 'amount': str(order.total_amount)}
     )
     
     return order

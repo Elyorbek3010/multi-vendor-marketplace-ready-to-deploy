@@ -73,9 +73,16 @@ class StripeWebhookView(APIView):
                 
                 if order_id:
                     try:
+                        from common.models import AuditLog
                         order = Order.objects.get(id=order_id)
                         order.status = 'PAID'
                         order.save()
+                        
+                        AuditLog.objects.create(
+                            user=order.buyer,
+                            action='ORDER_PAID_STRIPE',
+                            details={'order_id': str(order.id), 'stripe_session_id': session.id}
+                        )
                     except Order.DoesNotExist:
                         pass
 
