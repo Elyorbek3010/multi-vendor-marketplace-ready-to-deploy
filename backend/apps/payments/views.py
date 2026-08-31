@@ -69,7 +69,7 @@ class StripeWebhookView(APIView):
 
             if event['type'] == 'checkout.session.completed':
                 session = event['data']['object']
-                order_id = session.get('client_reference_id')
+                order_id = getattr(session, 'client_reference_id', None)
                 
                 if order_id:
                     try:
