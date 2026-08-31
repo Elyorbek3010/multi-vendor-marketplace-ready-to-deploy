@@ -14,9 +14,9 @@ class CreateStripeCheckoutSessionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, order_id):
-        order = get_object_or_404(Order, id=order_id, user=request.user)
+        order = get_object_or_404(Order, id=order_id, buyer=request.user)
         
-        if order.status != 'pending':
+        if order.status != 'PENDING':
             return Response(
                 {'error': 'You can only pay for pending orders.'}, 
                 status=status.HTTP_400_BAD_REQUEST
