@@ -53,29 +53,32 @@ class StripeWebhookView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        payload = request.body
-        sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
-        event = None
-
         try:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-            )
-        except ValueError as e:
-            return HttpResponse(status=400)
-        except stripe.error.SignatureVerificationError as e:
-            return HttpResponse(status=400)
+            payload = request.body
+            sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+            event = None
 
-        if event['type'] == 'checkout.session.completed':
-            session = event['data']['object']
-            order_id = session.get('client_reference_id')
-            
-            if order_id:
-                try:
-                    order = Order.objects.get(id=order_id)
-                    order.status = 'paid'
-                    order.save()
-                except Order.DoesNotExist:
-                    pass
+            try:
+                event = stripe.Webhook.construct_event(
+                    payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+                )
+            except ValueError as e:
+                return HttpResponse(status=400)
+            except stripe.error.SignatureVerificationError as e:
+                return HttpResponse(status=400)
 
-        return HttpResponse(status=200)
+            if event['type'] == 'checkout.session.completed':
+                session = event['data']['object']
+                order_id = session.get('client_reference_id')
+                
+                if order_id:
+                    try:
+                        order = Order.objects.get(id=order_id)
+                        order.status = 'PAID'
+                        order.save()
+                    except Order.DoesNotExist:
+                        pass
+
+            return HttpResponse(status=200)
+        except Exception as e:
+            return HttpResponse(f"Webhook Error: {str(e)}", status=500)
