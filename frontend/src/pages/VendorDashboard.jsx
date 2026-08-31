@@ -49,6 +49,18 @@ export default function VendorDashboard() {
     }
   };
 
+  const handleCancelRefund = async (orderId) => {
+    if (!window.confirm("Are you sure you want to Cancel or Refund this order? This will restock the inventory and update the status automatically.")) return;
+    try {
+      const response = await api.post(`/orders/${orderId}/cancel/`);
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status: response.data.status || 'CANCELLED' } : o));
+      alert(response.data.message || 'Order successfully processed.');
+    } catch (error) {
+      console.error('Failed to cancel/refund order:', error);
+      alert(error.response?.data?.error || 'Failed to process cancellation.');
+    }
+  };
+
   const handleAddNewClick = () => {
     setEditingProductId(null);
     setFormData({ title: '', description: '', price: '', stock: 0, category: '', optionsStr: '' });
@@ -334,6 +346,14 @@ export default function VendorDashboard() {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium flex justify-end space-x-2">
+                      {o.status !== 'CANCELLED' && o.status !== 'REFUNDED' && (
+                        <button
+                          onClick={() => handleCancelRefund(o.id)}
+                          className="text-xs bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1.5 rounded border border-red-200 transition-colors"
+                        >
+                          Cancel / Refund
+                        </button>
+                      )}
                       <select 
                         value={o.status}
                         onChange={(e) => updateOrderStatus(o.id, e.target.value)}
@@ -344,6 +364,7 @@ export default function VendorDashboard() {
                         <option value="SHIPPED">Shipped</option>
                         <option value="DELIVERED">Delivered</option>
                         <option value="CANCELLED">Cancelled</option>
+                        <option value="REFUNDED">Refunded</option>
                       </select>
                     </td>
                   </tr>

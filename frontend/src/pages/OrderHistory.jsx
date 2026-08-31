@@ -43,6 +43,19 @@ export default function OrderHistory() {
     }
   };
 
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to cancel this order? This will restore stock to the vendor.")) return;
+    try {
+      const response = await api.post(`/orders/${orderId}/cancel/`);
+      setOrders(orders.map(o => o.id === orderId ? { ...o, status: response.data.status || 'CANCELLED' } : o));
+      setToastMessage(`Order cancelled successfully!`);
+      setTimeout(() => setToastMessage(null), 5000);
+    } catch (error) {
+      console.error('Failed to cancel order:', error);
+      alert(error.response?.data?.error || 'Failed to cancel order.');
+    }
+  };
+
   const getImageUrl = (url) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
@@ -68,12 +81,20 @@ export default function OrderHistory() {
                 <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-2 inline-block">{order.status}</span>
                 <p className="font-bold text-gray-900 dark:text-white mt-1">Total: ${order.total_amount}</p>
                 {order.status?.toLowerCase() === 'pending' && (
-                  <button
-                    onClick={() => handlePayment(order.id)}
-                    className="mt-3 bg-[#635BFF] hover:bg-[#4B45D6] text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-all active:scale-95"
-                  >
-                    Pay with Stripe
-                  </button>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      onClick={() => handleCancelOrder(order.id)}
+                      className="bg-white hover:bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-bold shadow-sm transition-all active:scale-95"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={() => handlePayment(order.id)}
+                      className="bg-[#635BFF] hover:bg-[#4B45D6] text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-all active:scale-95"
+                    >
+                      Pay with Stripe
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
