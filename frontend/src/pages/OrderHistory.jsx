@@ -66,7 +66,7 @@ export default function OrderHistory() {
               <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
                 <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-2 inline-block">{order.status}</span>
                 <p className="font-bold text-gray-900 dark:text-white mt-1">Total: ${order.total_amount}</p>
-                {order.status === 'pending' && (
+                {order.status?.toLowerCase() === 'pending' && (
                   <button
                     onClick={() => handlePayment(order.id)}
                     className="mt-3 bg-[#635BFF] hover:bg-[#4B45D6] text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-all active:scale-95"
