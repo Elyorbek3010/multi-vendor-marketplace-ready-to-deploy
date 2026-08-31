@@ -29,6 +29,19 @@ export default function OrderHistory() {
     }
   }, [notifications]);
 
+  const handlePayment = async (orderId) => {
+    try {
+      const response = await api.post(`/payments/stripe/create-checkout-session/${orderId}/`);
+      if (response.data.payment_link) {
+        // Redirect the user to the Stripe checkout page
+        window.location.href = response.data.payment_link;
+      }
+    } catch (error) {
+      console.error('Payment link generation failed:', error);
+      alert('Failed to generate payment link. Please try again.');
+    }
+  };
+
   const getImageUrl = (url) => {
     if (!url) return null;
     if (url.startsWith('http')) return url;
@@ -50,9 +63,17 @@ export default function OrderHistory() {
                   {new Date(order.created_at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
-              <div className="text-left sm:text-right">
+              <div className="text-left sm:text-right flex flex-col items-start sm:items-end">
                 <span className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-2 inline-block">{order.status}</span>
                 <p className="font-bold text-gray-900 dark:text-white mt-1">Total: ${order.total_amount}</p>
+                {order.status === 'pending' && (
+                  <button
+                    onClick={() => handlePayment(order.id)}
+                    className="mt-3 bg-[#635BFF] hover:bg-[#4B45D6] text-white px-5 py-2 rounded-lg text-sm font-bold shadow-md transition-all active:scale-95"
+                  >
+                    Pay with Stripe
+                  </button>
+                )}
               </div>
             </div>
             

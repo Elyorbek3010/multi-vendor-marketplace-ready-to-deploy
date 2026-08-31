@@ -58,6 +58,9 @@ def cancel_order(order: Order, user) -> Order:
     # Check if a buyer is trying to cancel someone else's order
     if getattr(user, 'role', '') == 'BUYER' and order.buyer != user:
         raise ValidationError("You do not have permission to cancel this order.")
+        
+    # Check if we need to process a refund
+    requires_refund = (order.status == Order.Status.PAID)
 
     # Restore stock for each item in the order
     for item in order.items.all():
@@ -67,7 +70,11 @@ def cancel_order(order: Order, user) -> Order:
             inventory.save()
 
     # Update status
-    order.status = Order.Status.CANCELLED
+    if requires_refund:
+        _process_refund(order)
+        order.status = Order.Status.REFUNDED
+    else:
+        order.status = Order.Status.CANCELLED
     order.save()
 
     # Notify buyer
@@ -78,3 +85,25 @@ def cancel_order(order: Order, user) -> Order:
     )
     
     return order
+
+def _process_refund(order: Order):
+    """
+    Simulates calling the Payment Provider's Refund API.
+    In a real-world scenario with Payme, you would call their merchant API
+    to reverse the transaction associated with this order.
+    """
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    # Example placeholder for actual API integration:
+    # gateway = PaymeGateway(...)
+    # gateway.cancel_transaction(transaction_id)
+    
+    logger.info(f"Initiating refund of {order.total_amount} UZS for Order {order.id}.")
+    
+    # Notify buyer about the refund
+    publish_realtime_notification(
+        str(order.buyer.id), 
+        "REFUND_PROCESSED", 
+        {"order_id": str(order.id), "amount": str(order.total_amount)}
+    )

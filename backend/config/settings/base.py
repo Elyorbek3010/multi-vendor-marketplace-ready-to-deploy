@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'apps.vendors',
     'apps.products',
     'apps.orders',
+    'apps.payments',
     'corsheaders',
     'drf_spectacular',
     'storages',
@@ -125,3 +126,8 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'False').lower() == 'true'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'Marketplace <noreply@marketplace.com>')
+
+# Stripe Configuration
+STRIPE_SECRET_KEY = os.environ.get('STRIPE_SECRET_KEY', 'sk_test_dummy')
+STRIPE_WEBHOOK_SECRET = os.environ.get('STRIPE_WEBHOOK_SECRET', 'whsec_dummy')
+FRONTEND_URL = os.environ.get('FRONTEND_URL', 'http://localhost:5173')
