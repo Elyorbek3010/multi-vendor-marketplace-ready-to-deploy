@@ -1,3 +1,4 @@
+from django.http import response
 from django.test import TestCase
 from unittest.mock import patch
 from django.urls import reverse
@@ -18,6 +19,7 @@ class OrderCreationTests(TestCase):
         self.order_url = reverse("order-list")
 
         self.buyer = User.objects.get(pk="11111111-1111-1111-1111-111111111111")
+        self.vendor = User.objects.get(pk="22222222-2222-2222-2222-222222222222")
 
     def test_create_order_success(self):
         self.client.force_authenticate(user=self.buyer)
@@ -54,6 +56,85 @@ class OrderCreationTests(TestCase):
         response = self.client.patch(status_url, data, format='json')
         
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_buyer_cannot_update_status_via_order_detail(self):
+
+        order = Order.objects.create(
+            buyer=self.buyer,
+            status=Order.Status.PENDING,
+            total_amount=100.00
+        )
+
+        detail_url = reverse("order-detail", kwargs={"pk": order.pk})
+
+        self.client.force_authenticate(user=self.buyer)
+
+        response = self.client.patch(
+            detail_url,
+            {"status": "DELIVERED"},
+            format="json"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        order.refresh_from_db()
+
+        self.assertEqual(
+            order.status,
+            Order.Status.PENDING
+        )
+
+        self.assertIn("status", response.data)
+
+
+    def test_vendor_cannot_update_status_via_order_detail(self):
+
+        self.client.force_authenticate(user=self.buyer)
+
+        data = {
+            "items": [
+                {
+                    "product_id": "55555555-5555-5555-5555-555555555555",
+                    "quantity": 1
+                }
+            ]
+        }
+
+        response = self.client.post(
+            self.order_url,
+            data,
+            format="json"
+        )
+
+        order_id = response.data["id"]
+
+        self.client.force_authenticate(user=self.vendor)
+
+        detail_url = reverse(
+            "order-detail",
+            kwargs={"pk": order_id}
+        )
+
+        response = self.client.patch(
+            detail_url,
+            {"status": "DELIVERED"},
+            format="json"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST
+        )
+
+        order = Order.objects.get(pk=order_id)
+
+        self.assertEqual(
+            order.status,
+            Order.Status.PENDING
+        )
 
 
     def test_stock_decrements_on_purchase(self):

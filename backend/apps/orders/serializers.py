@@ -22,13 +22,21 @@ class OrderItemSerializer(serializers.ModelSerializer):
             return getattr(image, 'image_url', None) or (image.image.url if image.image else None)
         return None
 
-class VendorOrderSerializer(serializers.ModelSerializer):
+class StatusReadOnlyValidationMixin:
+    def validate(self, attrs):
+        if 'status' in self.initial_data:
+            raise serializers.ValidationError({
+                'status': 'Order status cannot be updated from this endpoint.'
+            })
+        return attrs
+
+class VendorOrderSerializer(StatusReadOnlyValidationMixin, serializers.ModelSerializer):
     items = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['buyer', 'total_amount']
+        read_only_fields = ['buyer', 'total_amount', 'status']
 
     def get_items(self, obj):
         request = self.context.get('request')
@@ -41,15 +49,17 @@ class VendorOrderSerializer(serializers.ModelSerializer):
             
         return OrderItemSerializer(items, many=True, context=self.context).data
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderSerializer(StatusReadOnlyValidationMixin, serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, required=False)
 
     class Meta:
         model = Order
         fields = '__all__'
-        read_only_fields = ['buyer', 'total_amount']
+        read_only_fields = ['buyer', 'total_amount', 'status']
 
     def validate(self, attrs):
+        attrs = super().validate(attrs)
+
         request = self.context.get('request')
         items_data = self.initial_data.get('items', [])
         
