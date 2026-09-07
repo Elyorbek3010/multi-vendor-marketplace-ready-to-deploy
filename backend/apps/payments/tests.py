@@ -51,12 +51,14 @@ class StripePaymentTests(TestCase):
     @patch('stripe.Webhook.construct_event')
     def test_stripe_webhook_marks_order_paid(self, mock_construct_event):
         # 1. Setup the mock event payload that Stripe would send
+        session = MagicMock()
+        session.client_reference_id = str(self.order.id)
+        session.id = "cs_test_123"
+
         mock_construct_event.return_value = {
             'type': 'checkout.session.completed',
             'data': {
-                'object': {
-                    'client_reference_id': str(self.order.id)
-                }
+                'object': session
             }
         }
 
